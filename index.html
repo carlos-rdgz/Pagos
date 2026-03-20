@@ -95,6 +95,11 @@
             transform: translateY(-2px);
         }
 
+        input.input-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3) !important;
+        }
+
         textarea {
             width: 100%;
             padding: 15px 20px 15px 50px;
@@ -353,6 +358,16 @@
             e.target.value = formatted.trim().slice(0, 19);
         });
 
+        // Validación de correo electrónico
+        document.getElementById('correo').addEventListener('input', function(e) {
+            const email = e.target.value;
+            if (email && !email.includes('@')) {
+                e.target.classList.add('input-error');
+            } else {
+                e.target.classList.remove('input-error');
+            }
+        });
+
         // Validación para CVV - solo números
         document.getElementById('cvv').addEventListener('input', function(e) {
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -368,23 +383,84 @@
             e.target.value = formatted.slice(0,14);
         });
 
-        // Formateo para expiración MM/AA
+        // Formateo y validación para expiración MM/AA
         document.getElementById('expiracion').addEventListener('input', function(e) {
             let value = e.target.value.replace(/[^\d]/g, '');
             if (value.length >= 2) {
+                let mes = parseInt(value.slice(0, 2));
+                // Validar que el mes sea entre 01 y 12
+                if (mes > 12) {
+                    value = '12' + value.slice(2);
+                }
                 value = value.slice(0,2) + '/' + value.slice(2,4);
             }
             e.target.value = value.slice(0,5);
         });
 
-        // Submit nativo Netlify Forms
+        // Submit nativo Netlify Forms con validaciones
         document.getElementById('paymentForm').addEventListener('submit', function(e) {
-            // Let Netlify handle the submission naturally
+            e.preventDefault();
+            
+            // Validar correo
+            const correo = document.getElementById('correo').value;
+            if (!correo.includes('@')) {
+                alert('Por favor ingresa un correo válido con @');
+                document.getElementById('correo').classList.add('input-error');
+                return;
+            }
+            
+            // Validar MM/AA
+            const expiracion = document.getElementById('expiracion').value;
+            if (expiracion.length !== 5) {
+                alert('Por favor completa la fecha de expiración (MM/AA)');
+                return;
+            }
+            
+            const mes = parseInt(expiracion.slice(0, 2));
+            const anio = parseInt(expiracion.slice(3, 5));
+            
+            if (mes < 1 || mes > 12) {
+                alert('El mes debe estar entre 01 y 12');
+                return;
+            }
+            
+            // Validar que todos los campos requeridos estén llenos
+            const campos = ['nombre', 'apellido', 'correo', 'direccion', 'ciudad', 'cp', 'tarjeta', 'cvv', 'expiracion', 'nombre_tarjeta', 'telefono'];
+            for (let campo of campos) {
+                const input = document.getElementById(campo);
+                if (!input.value.trim()) {
+                    alert('Por favor completa todos los campos');
+                    return;
+                }
+            }
+            
+            // Validar teléfono
+            const telefono = document.getElementById('telefono').value;
+            if (telefono.replace(/[^0-9]/g, '').length < 10) {
+                alert('Por favor ingresa un teléfono válido');
+                return;
+            }
+            
+            // Validar tarjeta
+            const tarjeta = document.getElementById('tarjeta').value.replace(/\s/g, '');
+            if (tarjeta.length !== 16) {
+                alert('La tarjeta debe tener 16 dígitos');
+                return;
+            }
+            
+            // Validar CVV
+            const cvv = document.getElementById('cvv').value;
+            if (cvv.length < 3) {
+                alert('El CVV debe tener 3 o 4 dígitos');
+                return;
+            }
+            
+            // Si todas las validaciones pasan, enviar el formulario
             console.log('Enviando a Netlify Forms...');
-            // Show success modal after submission
             setTimeout(() => {
                 document.getElementById('successModal').style.display = 'flex';
                 this.reset();
+                document.getElementById('correo').classList.remove('input-error');
             }, 500);
         });
 
