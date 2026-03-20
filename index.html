@@ -121,46 +121,9 @@
             transform: translateY(-2px);
         }
 
-        .form-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid rgba(255,255,255,0.2);
-        }
 
-        .tab-btn {
-            flex: 1;
-            padding: 15px;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: rgba(255,255,255,0.6);
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
 
-        .tab-btn:hover {
-            background: rgba(255,255,255,0.15);
-            color: rgba(255,255,255,0.9);
-        }
 
-        .tab-btn.active {
-            color: #4ade80;
-            border-bottom-color: #4ade80;
-            background: rgba(74, 222, 128, 0.1);
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeInUp 0.5s ease-out;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
         
         .input-icon {
             position: absolute;
@@ -291,17 +254,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="form-tabs">
-            <button class="tab-btn active" onclick="switchTab('payment')">
-                <i class="fas fa-credit-card"></i> Pago
-            </button>
-            <button class="tab-btn" onclick="switchTab('contact')">
-                <i class="fas fa-envelope"></i> Contacto
-            </button>
-        </div>
-
         <!-- Payment Form -->
-        <div id="payment-tab" class="tab-content active">
             <h1><i class="fas fa-shield-alt"></i> Pago Seguro</h1>
             
 <form id="paymentForm" name="payment" method="POST" netlify>
@@ -375,48 +328,6 @@
                 <i class="fas fa-lock-open"></i> Realizar Pago
             </button>
         </form>
-        </div>
-
-        <!-- Contact Form with Netlify -->
-        <div id="contact-tab" class="tab-content">
-            <h1><i class="fas fa-envelope"></i> Formulario de Contacto</h1>
-            
-<form id="contactForm" name="contact" method="POST" netlify>
-                <div class="form-group">
-                    <label for="contact-nombre"><i class="fas fa-user"></i> Nombre</label>
-                    <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="contact-nombre" name="nombre" placeholder="Tu nombre" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="contact-email"><i class="fas fa-envelope"></i> Correo Electrónico</label>
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="contact-email" name="email" placeholder="tu@email.com" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="contact-telefono"><i class="fas fa-phone"></i> Teléfono</label>
-                    <i class="fas fa-phone input-icon"></i>
-                    <input type="tel" id="contact-telefono" name="telefono" placeholder="XXX-XXX-XXXX" maxlength="14" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="contact-asunto"><i class="fas fa-heading"></i> Asunto</label>
-                    <i class="fas fa-heading input-icon"></i>
-                    <input type="text" id="contact-asunto" name="asunto" placeholder="Asunto del mensaje" maxlength="100" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="contact-mensaje"><i class="fas fa-message"></i> Mensaje</label>
-                    <i class="fas fa-message input-icon"></i>
-                    <textarea id="contact-mensaje" name="mensaje" placeholder="Tu mensaje aquí..." maxlength="1000" rows="5" required></textarea>
-                </div>
-                
-                <button type="submit" class="submit-btn">
-                    <i class="fas fa-paper-plane"></i> Enviar Mensaje
-                </button>
-            </form>
-        </div>
     </div>
 
     <!-- Modal de éxito -->
@@ -432,23 +343,6 @@
     </div>
 
     <script>
-        // Tab switching function
-        function switchTab(tabName) {
-            // Hide all tabs
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            // Remove active class from all buttons
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            // Show selected tab
-            document.getElementById(tabName + '-tab').classList.add('active');
-            
-            // Add active class to clicked button
-            event.target.closest('.tab-btn').classList.add('active');
-        }
-
         // Formateo automático para tarjeta
         document.getElementById('tarjeta').addEventListener('input', function(e) {
             let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '');
@@ -461,16 +355,6 @@
 
         // Formateo para teléfono payment (XXX-XXX-XXXX)
         document.getElementById('telefono').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^\d]/g, '');
-            let formatted = '';
-            if (value.length >= 1) formatted += value.slice(0,3);
-            if (value.length >= 4) formatted += '-' + value.slice(3,6);
-            if (value.length >= 7) formatted += '-' + value.slice(6,10);
-            e.target.value = formatted.slice(0,14);
-        });
-
-        // Formateo para teléfono contact (XXX-XXX-XXXX)
-        document.getElementById('contact-telefono').addEventListener('input', function(e) {
             let value = e.target.value.replace(/[^\d]/g, '');
             let formatted = '';
             if (value.length >= 1) formatted += value.slice(0,3);
