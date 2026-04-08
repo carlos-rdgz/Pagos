@@ -1,13 +1,13 @@
-const paypal = require('@paypal/checkout-server-sdk');
+const { core, orders } = require('@paypal/paypal-server-sdk');
 
 // Configuración PayPal - REEMPLAZA CON TUS CREDENCIALES
-const environment = new paypal.core.SandboxEnvironment(
+const environment = new core.SandboxEnvironment(
   'AZyElkuGTtZOQKbi8ZFTWu7Zl4gbfaWGvBYqPaH4aDX32QFJtlxhc4dfMvle4CSy0zTYH3lsSq2UxtEI', // Tu Client ID sandbox
   'EEvN2L8NGM8sQdM7LmghQGL5-dv_0Fya7NufiLoU2ktn2jATiOXihyIXT9DIOi9wbDpXpKgFSl4yNQJo'     // Tu Secret sandbox
 );
-// Para LIVE: new paypal.core.LiveEnvironment(clientId, secret)
+// Para LIVE: new core.LiveEnvironment(clientId, secret)
 
-const client = new paypal.core.PayPalHttpClient(environment);
+const client = new core.PayPalHttpClient(environment);
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -19,7 +19,7 @@ exports.handler = async (event) => {
   try {
     if (action === 'create') {
       // Crear orden PayPal
-      const request = new paypal.orders.OrdersCreateRequest();
+      const request = new orders.OrdersCreateRequest();
       request.prefer("return=representation");
       request.requestBody({
         intent: 'CAPTURE',
@@ -41,7 +41,7 @@ exports.handler = async (event) => {
       };
     } else if (action === 'capture') {
       // Capturar pago
-      const request = new paypal.orders.OrdersCaptureRequest(orderID);
+      const request = new orders.OrdersCaptureRequest(orderID);
       request.requestBody({});
 
       const capture = await client.execute(request);
